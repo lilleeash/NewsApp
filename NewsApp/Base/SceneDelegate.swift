@@ -15,10 +15,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let sceen = (scene as? UIWindowScene) else { return }
         
-        let provider: ProvidesNews = NewsDataProvider()
+        let presenter = NewsPresenter()
+        let viewController = NewsViewController(presenter: presenter)
+        presenter.viewController = viewController
         
         window = UIWindow(windowScene: sceen)
-        window?.rootViewController = NewsViewController(provider: provider)
+        window?.rootViewController = UINavigationController(rootViewController: viewController)
         window?.makeKeyAndVisible()
     }
     

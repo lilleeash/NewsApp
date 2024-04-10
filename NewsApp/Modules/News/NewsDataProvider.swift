@@ -23,7 +23,7 @@ final class NewsDataProvider: ProvidesNews {
         try await service.fetch(
             with: NewsEndpoints.everything,
             queryParams: [
-                URLQueryItem(name: "q", value: "bitcoin"),
+                URLQueryItem(name: "q", value: "it"),
                 URLQueryItem(name: "apiKey", value: NetworkSource.apiKey)
             ]
         )

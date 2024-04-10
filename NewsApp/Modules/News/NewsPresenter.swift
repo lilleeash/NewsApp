@@ -6,26 +6,29 @@
 //
 
 protocol PresentNews {
-    func loadNews() -> [NewsViewModel]
+    func loadNews()
 }
 
 final class NewsPresenter: PresentNews {
     
     private let provider: ProvidesNews
+    weak var viewController: DisplayNewsViewController?
     
     init(provider: ProvidesNews = NewsDataProvider()) {
         self.provider = provider
     }
     
-    func loadNews() -> [NewsViewModel] {
-        Task {
-            let responce = try await provider.fetchNews()
+    func loadNews() {
+        Task.detached(priority: .medium) {
+            let responce = try await self.provider.fetchNews()
             
-            var result = responce.articles.map {
+            let result = responce.articles.map {
                 NewsViewModel(title: $0.title, description: $0.description, url: $0.url, urlToImage: $0.urlToImage, content: $0.content)
             }
             
-            return result
+            await MainActor.run {
+                self.viewController?.display(with: result)
+            }
         }
     }
 }

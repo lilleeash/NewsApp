@@ -8,15 +8,18 @@
 import UIKit
 
 protocol DisplayNewsViewController: AnyObject {
-    func display(with model: [NewsViewModel])
+    func display(with state: NewsViewControllerState)
 }
 
 final class NewsViewController: UIViewController {
     
     private lazy var contentView: DisplayNewsView = {
         let view = NewsView()
+        view.retryDelegate = self
         return view
     }()
+    
+    private var state: NewsViewControllerState = .error(title: "Title", subtitle: "Subtitle")
     
     private let presenter: PresentNews?
     
@@ -36,19 +39,33 @@ final class NewsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        navigationItem.title = "News"
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        presenter?.loadNews()
+        display(with: state)
     }
-    
 }
 
 // MARK: - DisplayNewsViewController
 extension NewsViewController: DisplayNewsViewController {
-    func display(with model: [NewsViewModel]) {
-        contentView.configure(with: model)
+    func display(with state: NewsViewControllerState) {
+        switch state {
+        case .loading:
+            contentView.showLoading()
+            presenter?.loadNews()
+        case .result(let model):
+            contentView.showCollection(with: model)
+        case .error(let title, let subtitle):
+            contentView.showError(title: title, subtitle: subtitle)
+        }
     }
 }
 
+extension NewsViewController: NewsErrorViewDelegate {
+    func didRetryButtonTapped() {
+        display(with: .loading)
+    }
+}

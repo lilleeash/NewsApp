@@ -15,9 +15,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let sceen = (scene as? UIWindowScene) else { return }
         
-        let presenter = NewsPresenter()
-        let viewController = NewsViewController(presenter: presenter)
-        presenter.viewController = viewController
+//        let presenter = NewsPresenter()
+//        let viewController = NewsViewController(presenter: presenter)
+//        presenter.viewController = viewController
+        
+        let viewController = NewsDetailViewController(news: NewsViewModel(title: "", description: "", url: "https://www.apple.com", urlToImage: "", content: ""))
         
         window = UIWindow(windowScene: sceen)
         window?.rootViewController = UINavigationController(rootViewController: viewController)
